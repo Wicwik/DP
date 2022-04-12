@@ -3,6 +3,8 @@ import PIL.Image
 import torch
 import numpy as np
 
+from typing import List, Optional, Tuple, Union
+
 import legacy
 
 def make_transform(translate: Tuple[float,float], angle: float):
