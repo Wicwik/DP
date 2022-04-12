@@ -1,3 +1,5 @@
+import os
+
 import dnnlib
 import PIL.Image
 import torch
