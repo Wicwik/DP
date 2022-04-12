@@ -13,6 +13,6 @@ def show_index():
 	return 'API for diploma thesis'
 
 @app.route('/<name>')
-def show_image():
+def show_image(name):
 	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], '{name}')
 	return render_template('index.html', user_image=full_filename)
