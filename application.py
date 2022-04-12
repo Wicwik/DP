@@ -10,5 +10,9 @@ app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
 @app.route('/')
 @app.route('/index')
 def show_index():
-	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'image0001.png')
+	return 'API for diploma thesis'
+
+@app.route('/<name>')
+def show_image():
+	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], '{name}')
 	return render_template('index.html', user_image=full_filename)
