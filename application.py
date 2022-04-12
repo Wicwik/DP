@@ -5,5 +5,5 @@ import os
 app = Flask(__name__)
 
 @app.route('/')
-def show_image(name):
+def show_image():
 	return render_template('index.html', user_image='samples/image0001.png')
