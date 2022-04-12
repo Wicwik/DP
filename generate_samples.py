@@ -33,7 +33,7 @@ translate = (0,0)
 rotate = 0
 truncation_psi = 1
 noise_mode = 'const'
-n_samples = 10
+n_samples = 100
 outdir = 'static/samples'
 
 os.makedirs(outdir, exist_ok=True)
