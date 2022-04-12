@@ -31,9 +31,17 @@ z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
 
 translate = (0,0)
 rotate = 0
+truncation_psi = 1
+noise_mode = 'const'
+
+idx = 1
 
 if hasattr(G.synthesis, 'input'):
 	print('input')
 	m = make_transform(translate, rotate)
 	m = np.linalg.inv(m)
 	G.synthesis.input.transform.copy_(torch.from_numpy(m))
+
+img = G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'seed{idx:04d}.png')
