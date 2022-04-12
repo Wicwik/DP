@@ -14,5 +14,5 @@ def show_index():
 
 @app.route('/<name>')
 def show_image(name):
-	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], '{name}')
+	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
 	return render_template('index.html', user_image=full_filename)
