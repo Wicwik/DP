@@ -29,6 +29,8 @@ label = torch.zeros([1, G.c_dim], device=device)
 
 z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
 
+translate = (0,0)
+
 if hasattr(G.synthesis, 'input'):
 	print('input')
 	m = make_transform(translate, rotate)
