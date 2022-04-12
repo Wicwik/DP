@@ -18,5 +18,5 @@ z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
 if hasattr(G.synthesis, 'input'):
 	print('input')
 	m = make_transform(translate, rotate)
-    m = np.linalg.inv(m)
-    G.synthesis.input.transform.copy_(torch.from_numpy(m))
+	m = np.linalg.inv(m)
+	G.synthesis.input.transform.copy_(torch.from_numpy(m))
