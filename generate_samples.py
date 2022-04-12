@@ -27,21 +27,24 @@ with dnnlib.util.open_url(network_pkl) as f:
 
 label = torch.zeros([1, G.c_dim], device=device)
 
-z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
-
 translate = (0,0)
 rotate = 0
 truncation_psi = 1
 noise_mode = 'const'
+n_samples = 10
+outdir = 'samples'
 
-idx = 1
+os.makedirs(outdir, exist_ok=True)
 
-if hasattr(G.synthesis, 'input'):
-	print('input')
-	m = make_transform(translate, rotate)
-	m = np.linalg.inv(m)
-	G.synthesis.input.transform.copy_(torch.from_numpy(m))
+for idx in range(n_samples):
+	z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
 
-img = G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
-img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'seed{idx:04d}.png')
+	if hasattr(G.synthesis, 'input'):
+		print('input')
+		m = make_transform(translate, rotate)
+		m = np.linalg.inv(m)
+		G.synthesis.input.transform.copy_(torch.from_numpy(m))
+
+	img = G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+	img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+	PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/seed{idx:04d}.png')
