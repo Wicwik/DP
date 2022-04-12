@@ -34,7 +34,7 @@ rotate = 0
 truncation_psi = 1
 noise_mode = 'const'
 n_samples = 10
-outdir = 'samples'
+outdir = 'static/samples'
 
 os.makedirs(outdir, exist_ok=True)
 
@@ -42,7 +42,6 @@ for idx in range(n_samples):
 	z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
 
 	if hasattr(G.synthesis, 'input'):
-		print('input')
 		m = make_transform(translate, rotate)
 		m = np.linalg.inv(m)
 		G.synthesis.input.transform.copy_(torch.from_numpy(m))
