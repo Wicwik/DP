@@ -1,1 +1,4 @@
 venv*
+*png
+stylegan3
+__pycache__
