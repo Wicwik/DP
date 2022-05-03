@@ -5,6 +5,8 @@ import PIL.Image
 import torch
 import numpy as np
 
+from tqdm import tqdm
+
 from typing import List, Optional, Tuple, Union
 
 import legacy
@@ -21,7 +23,7 @@ def make_transform(translate: Tuple[float,float], angle: float):
     m[1][2] = translate[1]
     return m
 
-network_pkl = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-t-ffhq-1024x1024.pkl'
+network_pkl = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-r-ffhqu-1024x1024.pkl'
 
 device = torch.device('cuda')
 with dnnlib.util.open_url(network_pkl) as f:
@@ -38,7 +40,7 @@ outdir = 'static/samples'
 
 os.makedirs(outdir, exist_ok=True)
 
-for idx in range(n_samples):
+for idx in tqdm(range(n_samples)):
 	z = torch.from_numpy(np.random.randn(1, G.z_dim)).to(device)
 
 	if hasattr(G.synthesis, 'input'):
