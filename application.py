@@ -1,6 +1,7 @@
-from flask import Flask, render_template, send_file
+from flask import Flask, render_template, send_file, request
 from markupsafe import escape
 import os
+import io
 
 from stylegan_generator import StyleGANGenerator
 
@@ -33,3 +34,35 @@ def generate_images(n_samples):
 	outdir = 'static/samples'
 	generator.generate_images(int(n_samples), outdir, truncation_psi=0.6)
 	return 'Succesfully generated {} images'.format(n_samples)
+
+def serve_pil_image(pil_img):
+	img_io = io.BytesIO()
+	pil_img.save(img_io, 'PNG', quality=70)
+	img_io.seek(0)
+	return send_file(img_io, mimetype='image/png')
+
+@app.route('/generate/json/new', methods=['POST'])
+def serve_img_json():
+	request_data = request.get_json()
+
+	truncation_psi = 1
+
+	if request_data:
+		if 'truncation_psi' in request_data:
+			truncation_psi = request_data['truncation_psi']
+
+	img = generator.generate_one(truncation_psi)
+	return serve_pil_image(img)
+
+@app.route('/generate/new', methods=['GET', 'POST'])
+def serve_img_form():
+	if request.method == 'POST':
+		truncation_psi = float(request.form.get('truncation_psi'))
+
+		img = generator.generate_one(truncation_psi or 1)
+		return render_template('form.html', user_image=full_filename) # TODO
+
+	return render_template('form.html')
+
+	
+

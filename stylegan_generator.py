@@ -16,7 +16,6 @@ class StyleGANGenerator:
 		self.device = torch.device('cuda')
 		self.network_pkl = network_pkl
 		self.G = self._get_sylegan_network(self.network_pkl)
-		print(self.G.c_dim)
 
 	def _make_transform(self, translate: Tuple[float,float], angle: float):
 	    m = np.eye(3)
@@ -56,3 +55,18 @@ class StyleGANGenerator:
 			img = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
 			img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
 			PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/image{idx:04d}.png')
+
+
+	def generate_one(self, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
+		label = torch.zeros([1, self.G.c_dim], device=self.device)
+
+		z = torch.from_numpy(np.random.randn(1, self.G.z_dim)).to(self.device)
+
+		if hasattr(self.G.synthesis, 'input'):
+			m = self._make_transform(translate, rotate)
+			m = np.linalg.inv(m)
+			self.G.synthesis.input.transform.copy_(torch.from_numpy(m))
+
+		img = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+		img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+		return PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB')
