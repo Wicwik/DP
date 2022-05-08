@@ -123,16 +123,18 @@ def test(dataloader, model, loss_fn):
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y.float()).item()
-            print(torch.round(pred), y)
-            correct.append((torch.round(pred) == y).type(torch.float).sum().item()/len(y))
+            correct.append(torch.round(pred).eq(y).sum().numpy())
+            print(correct)
     test_loss /= num_batches
     print(f"Test Error: \n Accuracy: {(100*np.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
-epochs = 5
+epochs = 100
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train(train_dataloader, model, loss_fn, optimizer)
     scheduler.step()
     test(test_dataloader, model, loss_fn)
 print("Done!")
+
+torch.save(model, "Model_5_100eps")

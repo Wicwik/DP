@@ -6,6 +6,7 @@ import torch
 import numpy as np
 
 from tqdm import tqdm
+from tqdm.contrib.telegram import tqdm as ttqdm, trange
 
 from typing import List, Optional, Tuple, Union
 
@@ -44,7 +45,7 @@ class StyleGANGenerator:
 		
 		os.makedirs(outdir, exist_ok=True)
 
-		for idx in tqdm(range(n_samples)):
+		for idx in trange(n_samples, token='5014943200:AAE9WepCFlwI-4M9kBxcflezF36s2YUoTYo', chat_id='528072721'):
 			z = torch.from_numpy(np.random.randn(1, self.G.z_dim)).to(self.device)
 
 			if hasattr(self.G.synthesis, 'input'):
@@ -54,7 +55,7 @@ class StyleGANGenerator:
 
 			img = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
 			img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-			PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/image{idx:04d}.png')
+			PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(f'{outdir}/image{idx:06d}.png')
 
 
 	def generate_one(self, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
