@@ -124,10 +124,9 @@ def test(dataloader, model, loss_fn):
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y.float()).item()
-            correct.append(torch.round(pred).eq(y).sum())
-            print(correct)
+            correct.append(torch.round(pred).eq(y).sum().cpu().numpy()/len(y[0])/len(y))
     test_loss /= num_batches
-    print(f"Test Error: \n Accuracy: {(100*torch.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    print(f"Test Error: \n Accuracy: {(100*np.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
 epochs = 100
@@ -138,4 +137,4 @@ for t in range(epochs):
     test(test_dataloader, model, loss_fn)
 print("Done!")
 
-torch.save(model, "Model_5_100eps")
+torch.save(model, "Model_5attr_100eps")
