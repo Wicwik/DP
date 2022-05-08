@@ -19,6 +19,7 @@ test_data = datasets.CelebA(root='data', split='test', download=True, transform=
 names_data = training_data.attr_names
 idx = [names_data.index('Eyeglasses'), names_data.index('Young'), names_data.index('No_Beard'), names_data.index('Smiling'), names_data.index('Male')]
 
+training_data.filename = training_data.filename[:1000]
 training_data.attr = training_data.attr[:1000,idx]
 test_data.attr = test_data.attr[:, idx]
 
