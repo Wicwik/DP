@@ -90,10 +90,6 @@ class CelebAClassifier(nn.Module):
 model = CelebAClassifier(num_classes=5).to(device)
 print(model)
 
-for name, param in model.named_parameters():
-    if param.requires_grad:
-        print (name, param.data.shape)
-
 loss_fn = nn.BCELoss()
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
@@ -130,7 +126,7 @@ def test(dataloader, model, loss_fn):
             print(torch.round(pred), y)
             correct.append((torch.round(pred) == y).type(torch.float).sum().item()/len(y))
     test_loss /= num_batches
-    print(f"Test Error: \n Accuracy: {(100*torch.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    print(f"Test Error: \n Accuracy: {(100*np.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
 epochs = 5
