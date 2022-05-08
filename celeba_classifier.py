@@ -46,6 +46,7 @@ for i in range(1, cols * rows + 1):
     plt.imshow(img.squeeze())
 plt.show()
 
+# device = "cpu"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 print(f"Using {device} device")
 
@@ -64,6 +65,7 @@ class CelebAClassifier(nn.Module):
             nn.Linear(256, 128),
             nn.Tanh(),
             nn.Linear(128, num_classes),
+            nn.Sigmoid()
         )
 
         def init_weights(m):
@@ -118,7 +120,7 @@ def test(dataloader, model, loss_fn):
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
             pred = model(X)
-            test_loss += loss_fn(pred, y).item()
+            test_loss += loss_fn(pred, y.float()).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
