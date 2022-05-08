@@ -124,7 +124,7 @@ def test(dataloader, model, loss_fn):
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y.float()).item()
-            correct.append(torch.round(pred).eq(y).sum().numpy())
+            correct.append(torch.round(pred).eq(y).sum())
             print(correct)
     test_loss /= num_batches
     print(f"Test Error: \n Accuracy: {(100*np.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
