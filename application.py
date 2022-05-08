@@ -65,12 +65,11 @@ def serve_img_form():
 		if request.form['action'] == 'Generate':
 			z = generator.get_random_vectors(1)
 			truncation_psi = request.form.get('truncation_psi')
+			print(z)
 
 			full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
-			if truncation_psi == '':
-				generator.generate_from(full_filename, z)
-			else:
-				generator.generate_from(full_filename, z, truncation_psi=float(truncation_psi))
+
+			generator.generate_from(full_filename, z, truncation_psi=float(truncation_psi))
 
 			print(full_filename)
 			return render_template('form.html', user_image=full_filename)
