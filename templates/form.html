@@ -1,14 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Generate image</title>
 </head>
 <body>
     <form method="POST">
-        <div><label>Truncation psi: <input type="text" name="truncation_psi"></label></div>
-        <input type="submit" value="Submit">
+        <div class="slidecontainer">
+            <input type="range" min="-1" max="2" step="0.01" value="{{ request.form['truncation_psi'] }}" class="slider" id="slider_range", name='truncation_psi'>
+            <p>Truncation psi: <span id="number"></span></p>
+        </div>
+        <input type="submit" name="action" value="Generate">
     </form>
 
-    <img src="{{ user_image }}" alt="User Image">
+    {% if user_image is defined %}
+    <div class="images">
+        <div class="generated_image">
+            <img class="displayed" src="{{ user_image }}" alt="User Image">
+        </div>
+        <div class="generated_image">
+            <img class="displayed" src="{{ user_image }}" alt="User Image">
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        var slider = document.getElementById("slider_range");
+        var output = document.getElementById("number");
+        output.innerHTML = slider.value;
+
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+        }
+    </script>
+
 </body>
 </html>

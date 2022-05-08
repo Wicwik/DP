@@ -58,7 +58,6 @@ class StyleGANGenerator:
 
 
 	def generate_one(self, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
-		label = torch.zeros([1, self.G.c_dim], device=self.device)
 
 		z = torch.from_numpy(np.random.randn(1, self.G.z_dim)).to(self.device)
 
@@ -70,3 +69,20 @@ class StyleGANGenerator:
 		img = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
 		img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
 		return PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB')
+
+	def generate_from(self, filepath, z, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
+		label = torch.zeros([1, self.G.c_dim], device=self.device)
+
+		z = torch.from_numpy(z).to(self.device)
+
+		if hasattr(self.G.synthesis, 'input'):
+			m = self._make_transform(translate, rotate)
+			m = np.linalg.inv(m)
+			self.G.synthesis.input.transform.copy_(torch.from_numpy(m))
+
+		img = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+		img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+		PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(filepath)
+
+	def get_random_vectors(self, n):
+		return np.random.randn(n, self.G.z_dim)

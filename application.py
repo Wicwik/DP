@@ -13,6 +13,7 @@ app.config['UPLOAD_FOLDER'] = PEOPLE_FOLDER
 network_pkl = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-r-ffhqu-1024x1024.pkl'
 generator = StyleGANGenerator(network_pkl)
 
+
 @app.route('/')
 @app.route('/index')
 def show_index():
@@ -54,13 +55,25 @@ def serve_img_json():
 	img = generator.generate_one(truncation_psi)
 	return serve_pil_image(img)
 
-@app.route('/generate/new', methods=['GET', 'POST'])
+@app.route('/generate', methods=['GET', 'POST'])
 def serve_img_form():
-	if request.method == 'POST':
-		truncation_psi = float(request.form.get('truncation_psi'))
+	name = 'form_image.png'
+	
+	os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-		img = generator.generate_one(truncation_psi or 1)
-		return render_template('form.html', user_image=full_filename) # TODO
+	if request.method == 'POST':
+		if request.form['action'] == 'Generate':
+			z = generator.get_random_vectors(1)
+			truncation_psi = request.form.get('truncation_psi')
+
+			full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
+			if truncation_psi == '':
+				generator.generate_from(full_filename, z)
+			else:
+				generator.generate_from(full_filename, z, truncation_psi=float(truncation_psi))
+
+			print(full_filename)
+			return render_template('form.html', user_image=full_filename)
 
 	return render_template('form.html')
 
