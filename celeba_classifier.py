@@ -64,7 +64,13 @@ class CelebAClassifier(nn.Module):
             nn.ReLU(),
             nn.Linear(256, 128),
             nn.Tanh(),
-            nn.Linear(128, num_classes),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.Tanh(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, num_classes),
             nn.Sigmoid()
         )
 
@@ -121,8 +127,8 @@ def test(dataloader, model, loss_fn):
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y.float()).item()
-            print(pred, y)
-            correct += (pred == y).type(torch.float).sum().item()
+            print(torch.round(pred), y)
+            correct += (torch.round(pred) == y).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
