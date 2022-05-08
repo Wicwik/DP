@@ -121,6 +121,7 @@ def test(dataloader, model, loss_fn):
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y.float()).item()
+            print(pred, y)
             correct += (pred == y).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
