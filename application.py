@@ -26,7 +26,7 @@ def show_image(name):
 
 @app.route('/img/<num>')
 def get_image(num):
-	name = f'image{int(num):04d}.png'
+	name = f'image{int(num):06d}.png'
 	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
 	return send_file(full_filename, mimetype='image/png')
 
