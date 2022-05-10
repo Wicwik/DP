@@ -17,12 +17,12 @@ generator = StyleGANGenerator(network_pkl)
 @app.route('/')
 @app.route('/index')
 def show_index():
-	return 'API for diploma thesis'
+	return render_template('index.html')
 
-@app.route('/<name>')
-def show_image(name):
-	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
-	return render_template('index.html', user_image=full_filename)
+# @app.route('/<name>')
+# def show_image(name):
+# 	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
+# 	return render_template('index.html', user_image=full_filename)
 
 @app.route('/img/<num>')
 def get_image(num):
@@ -51,6 +51,13 @@ def serve_img_json():
 	if request_data:
 		if 'truncation_psi' in request_data:
 			truncation_psi = request_data['truncation_psi']
+
+	img = generator.generate_one(truncation_psi)
+	return serve_pil_image(img)
+
+@app.route('/random')
+def get_random():
+	truncation_psi = 0.5
 
 	img = generator.generate_one(truncation_psi)
 	return serve_pil_image(img)

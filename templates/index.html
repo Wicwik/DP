@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Index</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>API</title>
 </head>
 <body>
-    <img src="{{ user_image }}" alt="User Image">
+    <h1>Controlling the output of a generative model by finding latent feature representations</h1>
+    <p>This is an API for our <a href="https://mt.belanec.eu">master thesis</a> that focuses on generating and modifying images of human faces. You can <a href="https://api.belanec.eu/browse">browse</a> generated images, generate a <a href="https://api.belanec.eu/random">random image</a> or <a href="https://api.belanec.eu/generate">generated and edit</a> images.</p>
 </body>
 </html>
