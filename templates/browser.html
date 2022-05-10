@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image browser</title>
+</head>
+<body>
+    {% set dec = num - 1 %}
+    {% set inc = num + 1 %}
+
+    {% if num|int != 0 %}
+    <a href="http://api.belanec.eu/browse/{{ dec }}" class="previous">&laquo; Previous</a>
+    {% else %}
+    <a href="http://api.belanec.eu/browse/{{ num }}" class="previous">&laquo; Previous</a>
+    {% endif%}
+    <a href="http://api.belanec.eu/browse/{{ inc }}" class="next">Next &raquo;</a>
+
+    <img src="{{ current_img }}" alt="User Image">
+</body>
+</html>
