@@ -86,7 +86,7 @@ def browse():
 
 @app.route('/browse/<current_img>')
 def browse_images(current_img):
-	num = current_img
+	num = int(current_img)
 	name = f'image{int(num):06d}.png'
 	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
 
