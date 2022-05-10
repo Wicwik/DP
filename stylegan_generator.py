@@ -59,6 +59,7 @@ class StyleGANGenerator:
 
 
 	def generate_one(self, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
+		label = torch.zeros([1, self.G.c_dim], device=self.device)
 
 		z = torch.from_numpy(np.random.randn(1, self.G.z_dim)).to(self.device)
 
