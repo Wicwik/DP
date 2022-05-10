@@ -76,5 +76,20 @@ def serve_img_form():
 
 	return render_template('form.html')
 
+@app.route('/browse')
+def browse():
+	num = 1
+	name = f'image{int(num):06d}.png'
+	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
+
+	return render_template('browser.html', current_img=full_filename, num=num) 
+
+@app.route('/browse/<current_img>')
+def browse_images(current_img):
+	num = current_img
+	name = f'image{int(num):06d}.png'
+	full_filename = os.path.join(app.config['UPLOAD_FOLDER'], f'{escape(name)}')
+
+	return render_template('browser.html', current_img=full_filename, num=num) 
 	
 
