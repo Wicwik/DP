@@ -1,6 +1,8 @@
+h1 {text-align: center;}
+
 img.displayed {
-    width: 150px;
-    height: 150px 
+    width: 500px;
+    height: 500px 
 }
 
 .generated_image {
@@ -17,4 +19,37 @@ img.displayed {
 
 .images {
     text-align:center;
+}
+
+a {
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+
+.browser_buttons {
+    margin: auto;
+    text-align:center;
+    width:70%;
+    height:50px;
+    position:relative;
+ }
+.browser_img {
+    margin: auto;
+    text-align:center;
+    width:40%;
+    position: relative;
+}
+
+.slidecontainer {
+    margin: auto;
+    text-align: center;
+    position: relative;
+}
+
+.generate_button {
+    margin: auto;
+    text-align: center;
+    position: relative;
 }

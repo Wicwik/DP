@@ -5,12 +5,15 @@
     <title>Generate image</title>
 </head>
 <body>
+    <h1>Generate and modify images</h1>
     <form method="POST">
         <div class="slidecontainer">
             <input type="range" min="-1" max="2" step="0.01" value="{{ request.form['truncation_psi'] }}" class="slider" id="slider_range", name='truncation_psi'>
             <p>Truncation psi: <span id="number"></span></p>
         </div>
-        <input type="submit" name="action" value="Generate">
+        <div class='generate_button'>
+            <input type="submit" name="action" value="Generate">
+        </div>
     </form>
 
     {% if user_image is defined %}

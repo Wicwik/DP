@@ -78,7 +78,7 @@ def serve_img_form():
 
 @app.route('/browse')
 def browse():
-	num = 1
+	num = 0
 	name = f'image{int(num):06d}.png'
 	full_filename = os.path.join('samples', f'{escape(name)}')
 
