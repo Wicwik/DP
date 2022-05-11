@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 import numpy as np
 
-transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(0.5, 0.5)])
+transform = transforms.Compose([transforms.ToTensor()])
 
 training_data = datasets.CelebA(root='data', split='train', download=True, transform=transform)
 test_data = datasets.CelebA(root='data', split='test', download=True, transform=transform)
@@ -62,14 +62,14 @@ class CelebAClassifier(nn.Module):
             nn.Dropout(0.2),
             nn.Linear(512, 256),
             nn.ReLU(),
-            nn.Linear(256, 128),
+            nn.Linear(256, 16),
             nn.Tanh(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, 32),
-            nn.Tanh(),
-            nn.Linear(32, 16),
-            nn.ReLU(),
+            # nn.Linear(128, 64),
+            # nn.ReLU(),
+            # nn.Linear(64, 32),
+            # nn.Tanh(),
+            # nn.Linear(32, 16),
+            # nn.ReLU(),
             nn.Linear(16, num_classes),
             nn.Sigmoid()
         )
@@ -102,6 +102,7 @@ def train(dataloader, model, loss_fn, optimizer):
         X, y = X.to(device), y.to(device)
 
         pred = model(X)
+        print(pred)
 
         loss = loss_fn(pred, y.float())
 
@@ -122,6 +123,7 @@ def test(dataloader, model, loss_fn):
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
             pred = model(X)
+            print(pred)
             test_loss += loss_fn(pred, y.float()).item()
             correct.append(torch.round(pred).eq(y).sum().cpu().numpy()/len(y[0])/len(y))
     test_loss /= num_batches
