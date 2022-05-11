@@ -4,7 +4,7 @@ network_pkl = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/ve
 generator = StyleGANGenerator(network_pkl)
 
 n_batch = 10
-batch_size = 16
+batch_size = 32
 outdir = '/data/users/rbelanec/generated_images/'
 
 generator.generate_images(n_batch, batch_size, outdir, truncation_psi=0.6)
