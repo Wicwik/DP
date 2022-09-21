@@ -1,4 +1,5 @@
 import torch
+import time
 
 from torch import nn, optim
 from torch.optim.lr_scheduler import StepLR
@@ -29,8 +30,8 @@ test_dataloader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 
 
 for X, y in test_dataloader:
-    print(f"Shape of X [N, C, H, W]: {X.shape}")
-    print(f"Shape of y: {y.shape} {y.dtype}")
+    print(f'Shape of X [N, C, H, W]: {X.shape}')
+    print(f'Shape of y: {y.shape} {y.dtype}')
     inp_shape = X.shape
     break
 
@@ -46,63 +47,51 @@ for i in range(1, cols * rows + 1):
     plt.imshow(img.squeeze())
 plt.show()
 
-# device = "cpu"
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = 'cpu' # cpu 500s, mps 15s
+if torch.backends.mps.is_available():
+    device = 'mps'
+if torch.cuda.is_available():
+    device = 'cuda'
+
 print(f"Using {device} device")
 
-
 class CelebAClassifier(nn.Module):
-    def __init__(self, num_classes=5):
+    def __init__(self, n_classes=5):
         super(CelebAClassifier, self).__init__()
     
-        self.resnet = models.resnet34(pretrained=True)
-        self.resnet_no_fc = nn.Sequential(*(list(self.resnet.children())[:-1]))
-
-        self.classifier = nn.Sequential(
+        self.resnet = models.resnet34(weights='ResNet34_Weights.DEFAULT')
+        self.resnet.fc = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Linear(256, 16),
-            nn.Tanh(),
-            # nn.Linear(128, 64),
-            # nn.ReLU(),
-            # nn.Linear(64, 32),
-            # nn.Tanh(),
-            # nn.Linear(32, 16),
-            # nn.ReLU(),
-            nn.Linear(16, num_classes),
-            nn.Sigmoid()
+            nn.Linear(in_features=self.resnet.fc.in_features, out_features=n_classes)
         )
 
-        def init_weights(m):
-            if type(m) in [nn.Linear, nn.Conv2d]:
-                nn.init.kaiming_uniform_(m.weight)
+        self.sigmoid = nn.Sigmoid()
+        # we do not init weitghts when using pretrained resnet
+        # def init_weights(m):
+        #     if type(m) in [nn.Linear, nn.Conv2d]:
+        #         nn.init.kaiming_uniform_(m.weight)
 
-        self.classifier.apply(init_weights)
-        self.resnet_no_fc.apply(init_weights)
+        # self.resnet.apply(init_weights)
 
     def forward(self, x):
-        x = self.resnet_no_fc(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        return x
+        return self.sigmoid(self.resnet(x))
 
-model = CelebAClassifier(num_classes=5).to(device)
-print(model)
+model = CelebAClassifier(n_classes=5).to(device)
+# print(model)
 
 loss_fn = nn.BCELoss()
 
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 scheduler = StepLR = StepLR(optimizer, step_size=1, gamma=0.1)
 
 def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
+    start = time.time()
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to(device), y.to(device)
 
         pred = model(X)
-        print(pred)
 
         loss = loss_fn(pred, y.float())
 
@@ -111,8 +100,10 @@ def train(dataloader, model, loss_fn, optimizer):
         optimizer.step()
 
         if batch % 100 == 0:
+            end = time.time()
             loss, current = loss.item(), batch * len(X)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
+            print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}] time: {end-start}')
+            start = time.time()
 
 def test(dataloader, model, loss_fn):
     size = len(dataloader.dataset)
@@ -127,15 +118,15 @@ def test(dataloader, model, loss_fn):
             test_loss += loss_fn(pred, y.float()).item()
             correct.append(torch.round(pred).eq(y).sum().cpu().numpy()/len(y[0])/len(y))
     test_loss /= num_batches
-    print(f"Test Error: \n Accuracy: {(100*np.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    print(f'Test Error: \n Accuracy: {(100*np.mean(correct)):>0.1f}%, Avg loss: {test_loss:>8f} \n')
 
 
-epochs = 100
+epochs = 35
 for t in range(epochs):
-    print(f"Epoch {t+1}\n-------------------------------")
+    print(f'Epoch {t+1}\n-------------------------------')
     train(train_dataloader, model, loss_fn, optimizer)
     scheduler.step()
     test(test_dataloader, model, loss_fn)
-print("Done!")
+print('Done!')
 
-torch.save(model, "Model_5attr_100eps")
+torch.save(model, 'Model_5attr_35eps')
