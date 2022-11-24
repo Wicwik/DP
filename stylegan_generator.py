@@ -5,6 +5,7 @@ import PIL.Image
 import torch
 import numpy as np
 import h5py
+import cv2
 
 from tqdm import tqdm
 from tqdm.contrib.telegram import tqdm as ttqdm, trange
@@ -35,7 +36,7 @@ class StyleGANGenerator:
 		with dnnlib.util.open_url(network_pkl) as f:
 			return legacy.load_network_pkl(f)['G_ema'].to(self.device)
 
-	def generate_images(self, n_batch, batch_size, outdir, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
+	def generate_images(self, n_batch, batch_size, outdir, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0, img_size = (178, 218)):
 		z_list = []
 
 		# network_pkl = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-r-ffhqu-1024x1024.pkl'
@@ -59,6 +60,7 @@ class StyleGANGenerator:
 
 			imgs = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
 			imgs = (imgs.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+			imgs = np.asarray([cv2.resize(img, dsize=img_size, interpolation=cv2.INTER_LANCZOS4) for img in imgs])
 
 			for j, img in enumerate(imgs):
 				PIL.Image.fromarray(img.cpu().numpy(), 'RGB').save(f'{outdir}/image{i*batch_size+j:06d}.png')

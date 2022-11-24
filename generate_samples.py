@@ -5,7 +5,8 @@ generator = StyleGANGenerator(network_pkl)
 
 n_batch = 16000
 batch_size = 16
-outdir = '/data/users/rbelanec/generated_images/'
+outdir = './data/generated_images/'
+truncation_psi = 1
 
-generator.generate_images(n_batch, batch_size, outdir, truncation_psi=0.6)
+generator.generate_images(n_batch, batch_size, outdir, truncation_psi=truncation_psi)
 # generator.test_generated_images(outdir, 1, truncation_psi=0.6)
