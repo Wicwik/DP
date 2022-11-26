@@ -60,10 +60,10 @@ class StyleGANGenerator:
 
 			imgs = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
 			imgs = (imgs.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-			imgs = np.asarray([cv2.resize(img, dsize=img_size, interpolation=cv2.INTER_LANCZOS4) for img in imgs])
+			imgs = np.asarray([cv2.resize(img.cpu().numpy(), dsize=img_size, interpolation=cv2.INTER_LANCZOS4) for img in imgs])
 
 			for j, img in enumerate(imgs):
-				PIL.Image.fromarray(img.cpu().numpy(), 'RGB').save(f'{outdir}/image{i*batch_size+j:06d}.png')
+				PIL.Image.fromarray(img, 'RGB').save(f'{outdir}/image{i*batch_size+j:06d}.png')
 
 		z_concat = np.concatenate(z_list, axis=0)
 		print('Array of latent vectors shape:',z_concat.shape)
