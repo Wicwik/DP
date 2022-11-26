@@ -3,8 +3,8 @@ from stylegan_generator import StyleGANGenerator
 network_pkl = 'https://api.ngc.nvidia.com/v2/models/nvidia/research/stylegan3/versions/1/files/stylegan3-r-ffhqu-1024x1024.pkl'
 generator = StyleGANGenerator(network_pkl)
 
-n_batch = 16000
-batch_size = 16
+n_batch = 32000
+batch_size = 8
 outdir = './data/generated_images/'
 truncation_psi = 1
 

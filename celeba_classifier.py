@@ -50,9 +50,7 @@ for i in range(1, cols * rows + 1):
     plt.imshow(img.squeeze())
 plt.show()
 
-device = 'cpu' # cpu 500s, mps 15s, only beta
-# if torch.backends.mps.is_available():
-#    device = 'mps'
+device = 'cpu'
 if torch.cuda.is_available():
     device = 'cuda'
 
@@ -69,18 +67,11 @@ class CelebAClassifier(nn.Module):
         )
 
         self.sigmoid = nn.Sigmoid()
-        # we do not init weitghts when using pretrained resnet
-        # def init_weights(m):
-        #     if type(m) in [nn.Linear, nn.Conv2d]:
-        #         nn.init.kaiming_uniform_(m.weight)
-
-        # self.resnet.apply(init_weights)
 
     def forward(self, x):
         return self.sigmoid(self.resnet(x))
 
 model = CelebAClassifier(n_classes=len(idx)).to(device)
-# print(model)
 
 loss_fn = nn.BCELoss()
 
@@ -137,7 +128,7 @@ def valid(dataloader, model, loss_fn, save_filename=None):
             pred = model(X)
             valid_loss += loss_fn(pred, y.float()).item()
             correct.append(torch.round(pred).eq(y).sum().cpu().numpy()/len(y[0])/len(y))
-            # print(correct)
+
     valid_loss /= num_batches
 
     if valid_loss < best_valid_loss and save_filename:
