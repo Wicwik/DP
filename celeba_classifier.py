@@ -143,43 +143,43 @@ def valid(dataloader, model, loss_fn, save_filename=None):
 def test(dataloader, model, loss_fn):
     num_batches = len(dataloader)
     model.eval()
-    test_loss, correct = 0, []
+    test_loss, correct = 0, 0
     with torch.no_grad():
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
             pred = model(X)
             test_loss += loss_fn(pred, y.float()).item()
-            correct.append(torch.round(pred).eq(y).sum().cpu().numpy()/len(y[0])/len(y))
+            correct += torch.mean((torch.round(pred) == y).float())
+    
     test_loss /= num_batches
-
-    test_acc = 100*np.mean(correct)
+    test_acc = 100*correct / num_batches
     print(f'Test Error: \n Accuracy: {test_acc:>0.1f}%, Avg loss: {test_loss:>8f} \n')
 
 save_filename = 'resnet34_classifier_eyeglasses_5e.pt'
-epochs = 5
-for t in range(epochs):
-    print(f'Epoch {t+1}\n-------------------------------')
-    train(train_dataloader, model, loss_fn, optimizer)
-    scheduler.step()
-    valid(valid_dataloader, model, loss_fn, save_filename=save_filename)
-print('Done!')
+# epochs = 5
+# for t in range(epochs):
+#     print(f'Epoch {t+1}\n-------------------------------')
+#     train(train_dataloader, model, loss_fn, optimizer)
+#     scheduler.step()
+#     valid(valid_dataloader, model, loss_fn, save_filename=save_filename)
+# print('Done!')
 
 print('Testing...')
 model.load_state_dict(torch.load(save_filename))
 test(test_dataloader, model, loss_fn)
 
-print('Plotting history...')
-plt.figure(figsize=(18, 4))
-plt.plot(train_loss_per_epoch, label = 'train')
-plt.plot(valid_loss_per_epoch, label = 'valid')
-plt.legend()
-plt.title('Loss Function')
-plt.show()
+# print('Plotting history...')
+# plt.figure(figsize=(18, 4))
+# plt.plot(train_loss_per_epoch, label = 'train')
+# plt.plot(valid_loss_per_epoch, label = 'valid')
+# plt.legend()
+# plt.title('Loss Function')
+# plt.show()
 
-plt.figure(figsize=(18, 4))
-plt.plot(train_acc_per_epoch, label = 'train')
-plt.plot(valid_acc_per_epoch, label = 'valid')
-plt.legend()
-plt.title('Accuracy')
-plt.show()
+# plt.figure(figsize=(18, 4))
+# plt.plot(train_acc_per_epoch, label = 'train')
+# plt.plot(valid_acc_per_epoch, label = 'valid')
+# plt.legend()
+# plt.title('Accuracy')
+# plt.show()
 

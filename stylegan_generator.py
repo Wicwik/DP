@@ -45,7 +45,8 @@ class StyleGANGenerator:
 		# used for conditional generation
 		label = torch.zeros([batch_size, self.G.c_dim], device=self.device)
 		
-		os.makedirs(outdir, exist_ok=True)
+		os.makedirs(outdir + '/imgs/noclass', exist_ok=True)
+		os.makedirs(outdir + '/latents', exist_ok=True)
 
 		for i in trange(n_batch, token='5014943200:AAE9WepCFlwI-4M9kBxcflezF36s2YUoTYo', chat_id='528072721'):
 			z = np.random.randn(batch_size, self.G.z_dim)
@@ -63,12 +64,12 @@ class StyleGANGenerator:
 			imgs = np.asarray([cv2.resize(img.cpu().numpy(), dsize=img_size, interpolation=cv2.INTER_LANCZOS4) for img in imgs])
 
 			for j, img in enumerate(imgs):
-				PIL.Image.fromarray(img, 'RGB').save(f'{outdir}/image{i*batch_size+j:06d}.png')
+				PIL.Image.fromarray(img, 'RGB').save(f'{outdir}imgs/noclass/image{i*batch_size+j:06d}.png')
 
 		z_concat = np.concatenate(z_list, axis=0)
 		print('Array of latent vectors shape:',z_concat.shape)
 
-		with h5py.File(outdir + '/sample_z.h5', 'w') as f:
+		with h5py.File(outdir + '/latents/sample_z.h5', 'w') as f:
 			f.create_dataset('z', data=z_concat)
 
 
@@ -105,7 +106,7 @@ class StyleGANGenerator:
 
 
 	def test_generated_images(self, outdir, n, truncation_psi = 1, noise_mode = 'const'):
-		with h5py.File(outdir + '/sample_z.h5', 'r') as f:
+		with h5py.File(outdir + '/latents/sample_z.h5', 'r') as f:
 			z = f['z'][:]
 
 		z = np.reshape(z[n], (1,512))
