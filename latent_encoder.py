@@ -13,7 +13,8 @@ targets_path = 'data/predictions/predictions_resnet34_eyeglasses.pkl'
 
 batch_size = 64
 transform = transforms.Compose([])
-dataset = load_latents_dataset(data_path, targets_path, transform=transform)
+target_transform = transforms.Compose([torch.round])
+dataset = load_latents_dataset(data_path, targets_path, transform=transform, target_transform=target_transform)
 train_data, valid_data, test_data = random_split(dataset, [0.8, 0.1, 0.1], generator=torch.Generator().manual_seed(42))
 
 train_dataloader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
@@ -26,6 +27,7 @@ for X, y in test_dataloader:
     print(f'Shape of X [N, C, H, W]: {X.shape}')
     print(f'Shape of y: {y.shape} {y.dtype}')
     inp_shape = X.shape
+    print(y)
     break
 
 device = 'cpu'
