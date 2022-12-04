@@ -1,8 +1,11 @@
 venv*
 *png
-stylegan3
+stylegan3*
+gcc*
 __pycache__
 *.zip
 *.txt
 *.jpg
 *.h5
+*pkl
+*pt
