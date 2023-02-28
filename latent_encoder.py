@@ -14,7 +14,7 @@ precision = BinaryPrecision()
 from torchmetrics.classification import BinaryRecall
 recall = BinaryRecall()
 
-from latents_dataset import load as load_latents_dataset
+from latents_dataset import load_custom_dataset as load_latents_dataset
 
 from utils.ops import norm_zero_one
 
