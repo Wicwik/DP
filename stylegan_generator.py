@@ -1,6 +1,6 @@
 import os
 
-import dnnlib
+import stylegan3.dnnlib as dnnlib
 import PIL.Image
 import torch
 import numpy as np
@@ -12,7 +12,7 @@ from tqdm.contrib.telegram import tqdm as ttqdm, trange
 
 from typing import List, Optional, Tuple, Union
 
-import legacy
+import stylegan3.legacy as legacy
 
 class StyleGANGenerator:
 	def __init__(self, network_pkl):
