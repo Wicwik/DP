@@ -98,14 +98,14 @@ class NNUtil():
         for batch, (X, y) in enumerate(dataloader):
             X, y = X.to(self.__device), y.to(self.__device)
 
-            pred = self.__model(X)
-
-            loss = self.__loss_fn(pred, y.float())
+            pred = self.__model(X, y)
+            loss = self.__loss_fn(pred, X)
+            
             train_loss += loss.item()
             
-            self.__optimizer.zero_grad()
             loss.backward()
             self.__optimizer.step()
+            self.__optimizer.zero_grad()
 
             if batch % 100 == 0:
                 end = time.time()
@@ -132,8 +132,8 @@ class NNUtil():
         with torch.no_grad():
             for X, y in dataloader:
                 X, y = X.to(self.__device), y.to(self.__device)
-                pred = self.__model(X)
-                valid_loss += self.__loss_fn(pred, y.float()).item()
+                pred = self.__model(X, y)
+                valid_loss += self.__loss_fn(pred, X.float()).item()
 
         valid_loss /= num_batches
 
@@ -143,6 +143,7 @@ class NNUtil():
             if valid_loss < self.__best_valid_loss and self.__save_filename:
                 print(f'Saving model to file: {self.__save_filename}')
                 torch.save(self.__model.state_dict(), self.__save_filename)
+                self.__best_valid_loss = valid_loss
 
             self.__valid_loss_per_epoch.append(valid_loss)
 
@@ -178,6 +179,7 @@ class NNUtil():
             if valid_loss < self.__best_valid_loss and self.__save_filename:
                 print(f'Saving model to file: {self.__save_filename}')
                 torch.save(self.__model.state_dict(), self.__save_filename)
+                self.__best_valid_loss = valid_loss
 
             self.__valid_loss_per_epoch.append(valid_loss)
             self.__valid_acc_per_epoch.append(valid_acc)

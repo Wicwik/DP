@@ -1,35 +1,34 @@
+import torch
 from torch import nn
 
 class LatentsAutoencoder(nn.Module):
     def __init__(self, input_shape=(64, 512), num_classes=1):
         super(LatentsAutoencoder, self).__init__()
     
+        vector_shape = input_shape[1]
         self.encoder = nn.Sequential(
-            nn.Linear(input_shape[1], 256),
-            nn.ReLU(),
-            nn.Linear(256, 128),
-            nn.ReLU(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, 36),
-            nn.ReLU(),
-            nn.Linear(36, 18),
-            nn.ReLU(),
-            nn.Linear(18, 9)
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
         )
 
         self.decoder = nn.Sequential(
-            nn.Linear(9, 18),
-            nn.ReLU(),
-            nn.Linear(18, 36),
-            nn.ReLU(),
-            nn.Linear(36, 64),
-            nn.ReLU(),
-            nn.Linear(64, 128),
-            nn.ReLU(),
-            nn.Linear(128, 256),
-            nn.ReLU(),
-            nn.Linear(256, input_shape[1]),
+            nn.Linear(num_classes+vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh(),
+            nn.Linear(vector_shape, vector_shape),
+            nn.Tanh()
         )
 
         def init_weights(m):
@@ -39,7 +38,7 @@ class LatentsAutoencoder(nn.Module):
         self.encoder.apply(init_weights)
         self.decoder.apply(init_weights)
 
-    def forward(self, x):
+    def forward(self, x, y):
         encoded = self.encoder(x)
-        decoded = self.decoder(encoded)
+        decoded = self.decoder(torch.cat((y, encoded),1))
         return decoded

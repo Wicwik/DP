@@ -3,7 +3,7 @@ import h5py
 import numpy as np
 
 from utils.custom_dataset import CustomDataset
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 
 class LatentsDataset:
@@ -26,7 +26,7 @@ class LatentsDataset:
 
         return latents, preds
 
-    def load_custom_dataset(self, transform = None, target_transform = None, balanced_classes = False):
+    def load_custom_dataset(self, transform = None, target_transform = None, balanced_classes = False, minmax_norm = False):
         preds = None
         with open(self.__targets_path,'rb') as f:
             preds = pickle.load(f)
@@ -34,6 +34,12 @@ class LatentsDataset:
         latents = None
         with h5py.File(self.__data_path, 'r') as f:
             latents = f['z'][:]
+
+        if minmax_norm:
+            self.scaler = MinMaxScaler()
+            latents = self.scaler.fit_transform(latents)
+
+        preds = np.round(preds)
             
         return CustomDataset(latents, preds, transform=transform, target_transform=target_transform)
 

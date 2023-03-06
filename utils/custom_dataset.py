@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import Dataset
-
+from torchvision.transforms.functional import normalize
 class CustomDataset(Dataset):
     def __init__(self, data, targets, transform=None, target_transform=None):
         self.data = torch.Tensor(data)
