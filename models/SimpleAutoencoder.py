@@ -5,23 +5,35 @@ class SimpleAutoencoder(nn.Module):
         super(SimpleAutoencoder, self).__init__()
     
         self.encoder = nn.Sequential(
-            nn.Linear(input_shape[1], 128),
-            nn.ELU(),
+            nn.Linear(input_shape[1], 256),
+            nn.ReLU(),
+            nn.Linear(256, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
             nn.Linear(128, 64),
-            nn.ELU(),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
             nn.Linear(64, 12),
-            nn.ELU(),
+            nn.ReLU(),
             nn.Linear(12, 3)
         )
 
         self.decoder = nn.Sequential(
             nn.Linear(3, 12),
-            nn.ELU(),
+            nn.ReLU(),
             nn.Linear(12, 64),
-            nn.ELU(),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
             nn.Linear(64, 128),
-            nn.ELU(),
-            nn.Linear(128, input_shape[1]),
+            nn.ReLU(),
+            nn.Linear(128, 256),
+            nn.ReLU(),
+            nn.Linear(256, 256),
+            nn.ReLU(),
+            nn.Linear(256, input_shape[1]),
         )
         
         def init_weights(m):
