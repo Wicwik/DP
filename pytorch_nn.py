@@ -141,7 +141,7 @@ class NNUtil():
 
         if not test:
             if valid_loss < self.__best_valid_loss and self.__save_filename:
-                print(f'Saving model to file: {self.__save_filename}')
+                print(f'Saving model to file: {self.__save_filename}, {valid_loss} < {self.__best_valid_loss}')
                 torch.save(self.__model.state_dict(), self.__save_filename)
                 self.__best_valid_loss = valid_loss
 
@@ -206,8 +206,8 @@ class NNUtil():
         self._valid_autoencoder(test=True)
         
         
-    def load_weights(self, weights):
-        pass
+    def load_weights(self, save_filename):
+        self.__model.load_state_dict(torch.load(save_filename))
     
     def predict(self, x):
         with torch.no_grad():

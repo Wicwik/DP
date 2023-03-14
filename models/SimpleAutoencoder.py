@@ -5,36 +5,34 @@ class SimpleAutoencoder(nn.Module):
         super(SimpleAutoencoder, self).__init__()
     
         self.encoder = nn.Sequential(
-            nn.Linear(input_shape[1], 256),
+            nn.Linear(input_shape[1], 512),
             nn.ReLU(),
-            nn.Linear(256, 256),
+            nn.Linear(512, 1024),
             nn.ReLU(),
-            nn.Linear(256, 128),
+            nn.Linear(1024, 1024),
             nn.ReLU(),
-            nn.Linear(128, 64),
+            nn.Linear(1024, 1024),
             nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, 12),
-            nn.ReLU(),
-            nn.Linear(12, 3)
-        )
-
+            nn.Linear(1024, 2048),
+            nn.ReLU(), 
+            nn.Linear(2048, 2048), 
+            nn.ReLU(), 
+            nn.Linear(2048, 2048))
+        
         self.decoder = nn.Sequential(
-            nn.Linear(3, 12),
+            nn.Linear(2048, 2048),
             nn.ReLU(),
-            nn.Linear(12, 64),
+            nn.Linear(2048, 2048),
             nn.ReLU(),
-            nn.Linear(64, 64),
+            nn.Linear(2048, 1024),
+            nn.ReLU(), 
+            nn.Linear(1024, 1024),
             nn.ReLU(),
-            nn.Linear(64, 128),
+            nn.Linear(1024, 1024),
             nn.ReLU(),
-            nn.Linear(128, 256),
+            nn.Linear(1024, 512),
             nn.ReLU(),
-            nn.Linear(256, 256),
-            nn.ReLU(),
-            nn.Linear(256, input_shape[1]),
-        )
+            nn.Linear(512, input_shape[1]))  
         
         def init_weights(m):
             if type(m) in [nn.Linear, nn.Conv2d]:

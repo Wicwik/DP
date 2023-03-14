@@ -1,9 +1,11 @@
 import pickle
 import h5py
+import torch
 import numpy as np
 
 from utils.custom_dataset import CustomDataset
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from torch.utils.data import TensorDataset
 
 
 class LatentsDataset:
@@ -26,7 +28,7 @@ class LatentsDataset:
 
         return latents, preds
 
-    def load_custom_dataset(self, transform = None, target_transform = None, balanced_classes = False, minmax_norm = False):
+    def load_custom_dataset(self, transform = None, target_transform = None, minmax_norm = False):
         preds = None
         with open(self.__targets_path,'rb') as f:
             preds = pickle.load(f)
@@ -53,3 +55,21 @@ class LatentsDataset:
             latents = self.scaler.fit_transform(latents)
 
         return CustomDataset(latents, latents, transform=transform, target_transform=transform)
+    
+    
+    def load_tensor_dataset(self, minmax_norm = False):
+        preds = None
+        with open(self.__targets_path,'rb') as f:
+            preds = pickle.load(f)
+
+        latents = None
+        with h5py.File(self.__data_path, 'r') as f:
+            latents = f['z'][:]
+
+        if minmax_norm:
+            self.scaler = MinMaxScaler()
+            latents = self.scaler.fit_transform(latents)
+
+        preds = np.round(preds)
+            
+        return TensorDataset(torch.Tensor(latents), torch.Tensor(preds))
