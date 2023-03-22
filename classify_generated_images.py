@@ -13,7 +13,7 @@ import os
 
 n_classes = 1
 save_filename = 'resnet34_classifier_eyeglasses_5e.pt'
-path_to_data = './data/generated_images/imgs'
+path_to_data = '/home/robert/data/diploma-thesis/datasets/stylegan3/tpsi_1/imgs'
 
 transform = transforms.Compose([transforms.ToTensor()])
 
@@ -28,7 +28,10 @@ for X, y in dataloader:
     print(f'Shape of X [N, C, H, W]: {X.shape}')
     print(f'Shape of y: {y.shape} {y.dtype}')
     inp_shape = X.shape
+    print(X)
     break
+
+exit()
 
 figure = plt.figure(figsize=(8, 8))
 cols, rows = 3, 3
