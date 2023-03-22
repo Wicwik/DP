@@ -35,6 +35,33 @@ class StyleGANGenerator:
 	def _get_sylegan_network(self, network_pkl):
 		with dnnlib.util.open_url(network_pkl) as f:
 			return legacy.load_network_pkl(f)['G_ema'].to(self.device)
+		
+
+	def generate_images_from_z(self, z_path, n_batch, batch_size, outdir, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0, img_size = (178, 218)):
+		label = torch.zeros([batch_size, self.G.c_dim], device=self.device)
+		
+		os.makedirs(outdir + '/imgs/noclass', exist_ok=True)
+		os.makedirs(outdir + '/latents', exist_ok=True)
+
+		z = None
+		with h5py.File(z_path, 'r') as f:
+			z = np.split(f['z'][:], n_batch)
+
+		for i in trange(n_batch, token='5014943200:AAE9WepCFlwI-4M9kBxcflezF36s2YUoTYo', chat_id='528072721'):
+			z_batch = torch.from_numpy(z[i]).to(self.device)
+
+			if hasattr(self.G.synthesis, 'input'):
+				m = self._make_transform(translate, rotate)
+				m = np.linalg.inv(m)
+				self.G.synthesis.input.transform.copy_(torch.from_numpy(m))
+
+			imgs = self.G(z_batch, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+			imgs = (imgs.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+			imgs = np.asarray([cv2.resize(img.cpu().numpy(), dsize=img_size, interpolation=cv2.INTER_LANCZOS4) for img in imgs])
+
+			for j, img in enumerate(imgs):
+				PIL.Image.fromarray(img, 'RGB').save(f'{outdir}/imgs/noclass/image{i*batch_size+j:06d}.png')
+
 
 	def generate_images(self, n_batch, batch_size, outdir, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0, img_size = (178, 218)):
 		z_list = []
@@ -87,8 +114,8 @@ class StyleGANGenerator:
 		img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
 		return PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB')
 
-	def generate_from(self, filepath, z, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
-		label = torch.zeros([1, self.G.c_dim], device=self.device)
+	def generate_from(self, z, filepath = None, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
+		label = torch.zeros([len(z), self.G.c_dim], device=self.device)
 
 		z = torch.from_numpy(z).to(self.device)
 
@@ -97,9 +124,14 @@ class StyleGANGenerator:
 			m = np.linalg.inv(m)
 			self.G.synthesis.input.transform.copy_(torch.from_numpy(m))
 
-		img = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
-		img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
-		PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB').save(filepath)
+		imgs = self.G(z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+		imgs = (imgs.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
+
+		if filepath:
+			for i, img in enumerate(imgs):
+				PIL.Image.fromarray(img.cpu().numpy(), 'RGB').save(f'{filepath}_{i:06d}.png')
+		else:
+			return imgs.cpu().numpy()
 
 	def get_random_vectors(self, n):
 		return np.random.randn(n, self.G.z_dim)

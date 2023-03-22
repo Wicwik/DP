@@ -5,32 +5,12 @@ class SimpleAutoencoder(nn.Module):
         super(SimpleAutoencoder, self).__init__()
     
         self.encoder = nn.Sequential(
-            nn.Linear(input_shape[1], 512),
+            nn.Linear(input_shape[1], 1024),
             nn.ReLU(),
-            nn.Linear(512, 1024),
-            nn.ReLU(),
-            nn.Linear(1024, 1024),
-            nn.ReLU(),
-            nn.Linear(1024, 1024),
-            nn.ReLU(),
-            nn.Linear(1024, 2048),
-            nn.ReLU(), 
-            nn.Linear(2048, 2048), 
-            nn.ReLU(), 
-            nn.Linear(2048, 2048))
+            nn.Linear(1024, 1024))
         
         self.decoder = nn.Sequential(
-            nn.Linear(2048, 2048),
-            nn.ReLU(),
-            nn.Linear(2048, 2048),
-            nn.ReLU(),
-            nn.Linear(2048, 1024),
-            nn.ReLU(), 
             nn.Linear(1024, 1024),
-            nn.ReLU(),
-            nn.Linear(1024, 1024),
-            nn.ReLU(),
-            nn.Linear(1024, 512),
             nn.ReLU(),
             nn.Linear(512, input_shape[1]))  
         
