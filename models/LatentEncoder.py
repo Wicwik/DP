@@ -1,4 +1,5 @@
 from torch import nn
+import torch
 
 class LatentEncoder(nn.Module):
     def __init__(self, input_shape=(64, 512), num_classes=1):

@@ -28,10 +28,7 @@ for X, y in dataloader:
     print(f'Shape of X [N, C, H, W]: {X.shape}')
     print(f'Shape of y: {y.shape} {y.dtype}')
     inp_shape = X.shape
-    print(X)
     break
-
-exit()
 
 figure = plt.figure(figsize=(8, 8))
 cols, rows = 3, 3
