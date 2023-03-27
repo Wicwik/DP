@@ -21,3 +21,4 @@ class L2FPipeline:
         with torch.no_grad():
             preds = self.classifier(imgs).cpu()
             print(preds)
+            return preds, imgs.cpu().numpy()
