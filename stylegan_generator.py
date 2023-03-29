@@ -117,7 +117,10 @@ class StyleGANGenerator:
 	def generate_from(self, z, filepath = None, truncation_psi = 1, noise_mode = 'const', translate = (0,0), rotate = 0):
 		label = torch.zeros([len(z), self.G.c_dim], device=self.device)
 
-		z = torch.from_numpy(z).to(self.device)
+		if torch.is_tensor(z):
+			z = z.to(self.device)
+		else:
+			z = torch.from_numpy(z).to(self.device)
 
 		if hasattr(self.G.synthesis, 'input'):
 			m = self._make_transform(translate, rotate)
