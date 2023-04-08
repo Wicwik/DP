@@ -5,7 +5,7 @@ import cv2
 import torch
 
 class L2FPipeline:
-    def __init__(self, generator, classifier, tpsi = 1, img_size = (178, 218)) -> None:
+    def __init__(self, generator, classifier, tpsi = 1, img_size = (218, 178)) -> None:
         self.device = torch.device('cuda')
         self.generator = generator
         self.classifier = classifier.to(self.device)
@@ -15,7 +15,9 @@ class L2FPipeline:
     def transform(self, z):
         to_tensor = transforms.ToTensor()
         imgs = self.generator.generate_from(z, truncation_psi=self.tpsi)
-        imgs = torch.stack([to_tensor(cv2.resize(img, dsize=self.img_size, interpolation=cv2.INTER_LANCZOS4)).to(self.device) for img in imgs])
+        # imgs = torch.stack([to_tensor(cv2.resize(img, dsize=self.img_size, interpolation=cv2.INTER_LANCZOS4)).to(self.device) for img in imgs])
+        imgs = transforms.Resize(size=self.img_size)(imgs).to(self.device)
+        print(imgs.shape)
         
         preds = None
         with torch.no_grad():

@@ -11,9 +11,9 @@ from tqdm import tqdm
 import pickle
 import os
 
-n_classes = 1
-save_filename = 'resnet34_classifier_eyeglasses_5e.pt'
-path_to_data = '/home/robert/data/diploma-thesis/datasets/stylegan3/tpsi_1/imgs'
+n_classes = 10
+save_filename = '/home/robert/data/diploma-thesis/weights/classfier/resnet34_celeba10attr_10e.pt'
+path_to_data = '/home/robert/data/diploma-thesis/datasets/stylegan2/tpsi_1/imgs'
 
 transform = transforms.Compose([transforms.ToTensor()])
 
@@ -41,20 +41,7 @@ for i in range(1, cols * rows + 1):
     plt.imshow(img.squeeze())
 plt.show()
 
-class CelebAClassifier(nn.Module):
-    def __init__(self, n_classes=5):
-        super(CelebAClassifier, self).__init__()
-    
-        self.resnet = models.resnet34(weights='DEFAULT')
-        self.resnet.fc = nn.Sequential(
-            nn.Dropout(0.2),
-            nn.Linear(in_features=self.resnet.fc.in_features, out_features=n_classes)
-        )
-
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, x):
-        return self.sigmoid(self.resnet(x))
+from models.MultilabelResnetClassifier import MultilabelResnetClassifier
 
 def predict(model, dataloader):
     preds = np.array([])
@@ -62,7 +49,10 @@ def predict(model, dataloader):
     with torch.no_grad():
         for X, _ in tqdm(dataloader):
             X = X.to(device)
-            preds = np.concatenate((preds, model(X).cpu().numpy()), axis=None)
+            if preds.size == 0:
+                preds = model(X).cpu().numpy()
+            else:
+                preds = np.concatenate((preds, model(X).cpu().numpy()), axis=0)
 
     return preds
 
@@ -72,11 +62,12 @@ if torch.cuda.is_available():
 
 print(f"Using {device} device")
 
-model = CelebAClassifier(n_classes=n_classes).to(device)
+model = MultilabelResnetClassifier(n_classes=n_classes).to(device)
 model.load_state_dict(torch.load(save_filename))
 
 preds = predict(model=model, dataloader=dataloader)
 
-os.makedirs('./data/predictions',exist_ok=True)
-with open('data/predictions/predictions_resnet34_eyeglasses.pkl', 'wb') as f:
+preds_path = '/home/robert/data/diploma-thesis/predictions/stylegan2/tpsi_1/resnet34_10attr.pkl'
+os.makedirs('/home/robert/data/diploma-thesis/predictions/stylegan2/tpsi_1',exist_ok=True)
+with open(preds_path, 'wb') as f:
     pickle.dump(preds, f)

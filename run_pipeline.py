@@ -32,6 +32,7 @@ with h5py.File(z_path, 'r') as f:
     z = np.split(f['z'][:], n_batch)
 
 print('start')
+print(['Attractive', 'Eyeglasses', 'No_Beard', 'Male', 'Black_Hair', 'Blond_Hair', 'Mustache', 'Young', 'Smiling', 'Bald'])
 
 for zi in z:
     start = time.time()

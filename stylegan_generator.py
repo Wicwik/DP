@@ -1,6 +1,15 @@
 import os
 
-import stylegan3.dnnlib as dnnlib
+model_version = 2
+
+if model_version == 2:
+	import stylegan2.dnnlib as dnnlib
+	import stylegan2.legacy as legacy
+
+if model_version == 3:
+	import stylegan3.dnnlib as dnnlib
+	import stylegan3.legacy as legacy
+
 import PIL.Image
 import torch
 import numpy as np
@@ -11,8 +20,6 @@ from tqdm import tqdm
 from tqdm.contrib.telegram import tqdm as ttqdm, trange
 
 from typing import List, Optional, Tuple, Union
-
-import stylegan3.legacy as legacy
 
 class StyleGANGenerator:
 	def __init__(self, network_pkl):
@@ -134,7 +141,7 @@ class StyleGANGenerator:
 			for i, img in enumerate(imgs):
 				PIL.Image.fromarray(img.cpu().numpy(), 'RGB').save(f'{filepath}_{i:06d}.png')
 		else:
-			return imgs.cpu().numpy()
+			return imgs.cpu()
 
 	def get_random_vectors(self, n):
 		return np.random.randn(n, self.G.z_dim)
