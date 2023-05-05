@@ -8,7 +8,7 @@ class LatentEncoder(nn.Module):
         self.encoder = nn.Sequential(
             nn.Linear(512, 1024),
             nn.ReLU(),
-            nn.Linear(1024, 25))
+            nn.Linear(1024, 257))
         
         self.decoder = nn.Sequential(
             nn.Linear(257, 256),

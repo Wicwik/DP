@@ -48,7 +48,6 @@ class StyleGANGenerator:
 		label = torch.zeros([batch_size, self.G.c_dim], device=self.device)
 		
 		os.makedirs(outdir + '/imgs/noclass', exist_ok=True)
-		os.makedirs(outdir + '/latents', exist_ok=True)
 
 		z = None
 		with h5py.File(z_path, 'r') as f:

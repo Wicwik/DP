@@ -3,12 +3,13 @@ from torchvision import models
 
 class MultilabelResnetClassifier(nn.Module):
     def __init__(self, n_classes=5):
+        self.n_classes = n_classes
         super(MultilabelResnetClassifier, self).__init__()
     
         self.resnet = models.resnet34(weights='DEFAULT')
         self.resnet.fc = nn.Sequential(
             nn.Dropout(0.2),
-            nn.Linear(in_features=self.resnet.fc.in_features, out_features=n_classes)
+            nn.Linear(in_features=self.resnet.fc.in_features, out_features=self.n_classes)
         )
 
         self.sigmoid = nn.Sigmoid()

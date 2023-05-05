@@ -11,9 +11,11 @@ from tqdm import tqdm
 import pickle
 import os
 
+_f = 'Male'
+
 n_classes = 10
 save_filename = '/home/robert/data/diploma-thesis/weights/classfier/resnet34_celeba10attr_10e.pt'
-path_to_data = '/home/robert/data/diploma-thesis/datasets/stylegan2/tpsi_1/imgs'
+path_to_data = '/home/robert/data/diploma-thesis/datasets/features/imgs/' + _f.lower() + '/imgs'
 
 transform = transforms.Compose([transforms.ToTensor()])
 
@@ -67,7 +69,7 @@ model.load_state_dict(torch.load(save_filename))
 
 preds = predict(model=model, dataloader=dataloader)
 
-preds_path = '/home/robert/data/diploma-thesis/predictions/stylegan2/tpsi_1/resnet34_10attr.pkl'
-os.makedirs('/home/robert/data/diploma-thesis/predictions/stylegan2/tpsi_1',exist_ok=True)
+preds_path = '/home/robert/data/diploma-thesis/datasets/features/predictions/' + _f.lower() + '/resnet34_10attr.pkl'
+os.makedirs('/home/robert/data/diploma-thesis/datasets/features/predictions/' + _f.lower(), exist_ok=True)
 with open(preds_path, 'wb') as f:
     pickle.dump(preds, f)

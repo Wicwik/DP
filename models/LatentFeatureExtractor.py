@@ -20,9 +20,13 @@ class LatentFeatureExtractor(nn.Module):
         vector_shape = input_shape[1]
 
         self.extractor = nn.Sequential(
-            nn.Linear(vector_shape+n_classes, 1024),
+            nn.Linear(vector_shape+n_classes, 256),
             nn.ReLU(),
-            nn.Linear(1024, 512),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 256),
+            nn.ReLU(),
+            nn.Linear(256, vector_shape),
       )
         
         self.generator = None
