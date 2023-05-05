@@ -17,8 +17,8 @@ To successfully run jupyter notebook, run the following commands in the followin
 - `jupyter notebook`
 
 
-Data can be found [here](data.belanec.eu/mt_data.zip). 
+Data can be found [here](http://data.belanec.eu/mt_data.zip). 
 
-The MLV dataset can found [here](data.belanec.eu/mlv.tar.gz).
+The MLV dataset can found [here](https://data.belanec.eu/mlv.tar.gz).
 
-Repo with some data can be found [here](data.belanec.eu/DP.zip)
+Repo with some data can be found [here](https://data.belanec.eu/DP.zip)
